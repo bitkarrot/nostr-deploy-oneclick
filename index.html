@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nostr One-Click Deploy Prompt</title>
+    <meta
+      name="description"
+      content="Login with Nostr, generate a deploy prompt, and paste it into your AI deploy assistant."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <div class="hero-top">
+          <p class="badge">Nostr + AI Deploy</p>
+          <button id="themeToggle" class="ghost" type="button" aria-label="Toggle theme">
+            Light Mode
+          </button>
+        </div>
+        <h1>Generate your one-click deploy prompt</h1>
+        <p class="lede">
+          1) Login with Nostr, 2) confirm relay name, 3) copy prompt, 4) paste into your AI deploy tool.
+        </p>
+      </header>
+
+      <section class="card">
+        <h2>Step 1 — Login with Nostr</h2>
+        <p class="muted">Works with NIP-07 browser extensions (Alby, nos2x, etc.).</p>
+
+        <div class="actions">
+          <button id="loginButton" class="primary">Login with Nostr</button>
+          <span id="status" class="status">Not connected</span>
+        </div>
+
+        <div class="grid">
+          <label>
+            Deploy Target
+            <select id="targetInput">
+              <option value="zeabur">Zeabur</option>
+              <option value="exedev">exe.dev</option>
+            </select>
+          </label>
+          <label>
+            Username
+            <input id="usernameInput" type="text" placeholder="Will auto-fill from profile when available" />
+          </label>
+          <label>
+            Relay Name
+            <input id="relayNameInput" type="text" value="MyRelay" />
+          </label>
+        </div>
+
+        <label>
+          Pubkey (hex)
+          <input id="pubkeyHexInput" type="text" readonly />
+        </label>
+
+        <label>
+          Pubkey (npub)
+          <input id="pubkeyNpubInput" type="text" readonly />
+        </label>
+      </section>
+
+      <section class="card">
+        <h2>Step 2 — Copy prompt for AI deploy</h2>
+        <textarea id="promptOutput" rows="18" readonly></textarea>
+        <div class="actions">
+          <button id="copyButton" class="secondary">Copy Prompt</button>
+          <span id="copyStatus" class="status"></span>
+        </div>
+      </section>
+
+      <section class="card note">
+        <h2>What this prompt asks AI to do</h2>
+        <p class="muted">Relay hosting requires persistent storage (Badger DB + media path), so static hosts like Vercel are not valid relay targets.</p>
+        <ul>
+          <li>Deploy `swarm` + `nostr-cms` as one stack</li>
+          <li>Use one domain (`https://` for CMS, `wss://` + `/api` for relay)</li>
+          <li>Set relay owner key (`RELAY_PUBKEY`) from your Nostr login</li>
+          <li>Keep `nostr.json` ACL on relay and use CMS as admin UI</li>
+        </ul>
+      </section>
+    </main>
+
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>
