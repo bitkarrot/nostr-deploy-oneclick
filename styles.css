@@ -1,29 +1,35 @@
 :root {
-  --bg: #0b1020;
-  --card: #11182d;
-  --text: #e7edf9;
-  --muted: #9aabc8;
-  --line: #27314a;
-  --primary: #14b8a6;
-  --primary-hover: #0d9488;
-  --secondary: #64748b;
-  --secondary-hover: #475569;
-  --badge-text: #ccfbf1;
-  --badge-bg: #0f3f3a;
+  --bg: #1a0340;
+  --card: rgba(41, 10, 80, 0.78);
+  --text: #ffd5ff;
+  --muted: #d8b1f2;
+  --line: rgba(180, 86, 255, 0.45);
+  --primary: #00d8d0;
+  --primary-hover: #00bbb5;
+  --secondary: #f35dd5;
+  --secondary-hover: #df45bf;
+  --badge-text: #ffd8ff;
+  --badge-bg: rgba(219, 79, 255, 0.2);
+  --headline: #ff77e9;
+  --input-bg: rgba(28, 8, 61, 0.86);
+  --surface-shadow: 0 14px 34px rgba(7, 0, 27, 0.5);
 }
 
 body[data-theme="light"] {
-  --bg: #f5f7fb;
-  --card: #ffffff;
-  --text: #141827;
-  --muted: #5b647a;
-  --line: #dce2ef;
-  --primary: #0f766e;
-  --primary-hover: #0d5f59;
-  --secondary: #334155;
-  --secondary-hover: #1e293b;
-  --badge-text: #134e4a;
-  --badge-bg: #ccfbf1;
+  --bg: #f2e7ff;
+  --card: rgba(255, 255, 255, 0.9);
+  --text: #3c1454;
+  --muted: #6f4b8e;
+  --line: rgba(173, 95, 234, 0.35);
+  --primary: #0aaea8;
+  --primary-hover: #08918c;
+  --secondary: #d63cb4;
+  --secondary-hover: #b92d98;
+  --badge-text: #7a0b8a;
+  --badge-bg: rgba(240, 132, 255, 0.28);
+  --headline: #cb2fae;
+  --input-bg: rgba(255, 255, 255, 0.9);
+  --surface-shadow: 0 14px 34px rgba(105, 57, 137, 0.2);
 }
 
 * {
@@ -34,7 +40,12 @@ body {
   margin: 0;
   font-family: "Avenir Next", "Segoe UI", sans-serif;
   color: var(--text);
-  background: radial-gradient(circle at 0% 0%, rgba(20, 184, 166, 0.16) 0, transparent 40%), var(--bg);
+  background:
+    radial-gradient(900px 460px at 20% 12%, rgba(255, 119, 233, 0.22) 0%, transparent 58%),
+    radial-gradient(760px 420px at 88% 6%, rgba(121, 55, 255, 0.4) 0%, transparent 52%),
+    radial-gradient(840px 420px at 8% 100%, rgba(84, 0, 170, 0.42) 0%, transparent 60%),
+    linear-gradient(165deg, #140033 0%, #22004f 45%, #2b0063 100%);
+  background-attachment: fixed;
 }
 
 .page {
@@ -76,17 +87,20 @@ body {
 }
 
 .ghost:hover {
-  background: rgba(148, 163, 184, 0.12);
+  background: rgba(229, 136, 255, 0.16);
 }
 
 h1 {
   margin: 0 0 8px;
   font-size: 32px;
   line-height: 1.1;
+  color: var(--headline);
+  text-shadow: 0 2px 16px rgba(251, 76, 220, 0.32);
 }
 
 h2 {
   margin-top: 0;
+  color: var(--headline);
 }
 
 .lede {
@@ -110,7 +124,8 @@ h2 {
   border-radius: 14px;
   padding: 18px;
   margin-bottom: 14px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--surface-shadow);
+  backdrop-filter: blur(4px);
 }
 
 .muted {
@@ -149,7 +164,15 @@ textarea {
   padding: 10px 12px;
   font-size: 14px;
   font-family: inherit;
-  background: #fff;
+  color: var(--text);
+  background: var(--input-bg);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid rgba(0, 216, 208, 0.45);
+  outline-offset: 0;
 }
 
 textarea {
@@ -175,7 +198,7 @@ button {
 
 .primary {
   background: var(--primary);
-  color: white;
+  color: #130a27;
 }
 
 .primary:hover {
@@ -184,7 +207,7 @@ button {
 
 .secondary {
   background: var(--secondary);
-  color: white;
+  color: #240726;
 }
 
 .secondary:hover {
