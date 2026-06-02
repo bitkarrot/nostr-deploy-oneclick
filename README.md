@@ -53,5 +53,7 @@ python3 -m http.server 8080
   - username
   - pubkey in hex
   - pubkey in npub
+  - explicit swarm/cms repository URLs and branch names
   - relay name + domain
   - one-domain deployment requirements
+  - `exe.dev` note: service port must be made public before external tests

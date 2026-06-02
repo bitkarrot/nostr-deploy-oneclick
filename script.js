@@ -8,6 +8,10 @@ const copyStatusEl = document.getElementById("copyStatus");
 const targetInput = document.getElementById("targetInput");
 const usernameInput = document.getElementById("usernameInput");
 const relayNameInput = document.getElementById("relayNameInput");
+const swarmRepoInput = document.getElementById("swarmRepoInput");
+const swarmBranchInput = document.getElementById("swarmBranchInput");
+const cmsRepoInput = document.getElementById("cmsRepoInput");
+const cmsBranchInput = document.getElementById("cmsBranchInput");
 const pubkeyHexInput = document.getElementById("pubkeyHexInput");
 const pubkeyNpubInput = document.getElementById("pubkeyNpubInput");
 const promptOutput = document.getElementById("promptOutput");
@@ -35,6 +39,10 @@ function initTheme() {
 
 function defaultPrompt() {
   const target = targetInput.value === "exedev" ? "exe.dev" : "Zeabur";
+  const exedevPortNote = target === "exe.dev"
+    ? `
+11) IMPORTANT for exe.dev: make the service port public before external testing. If port is private, external health checks fail and AI can loop forever.`
+    : "";
 
   return `I need you to deploy a Meetup Space stack for me on ${target}.
 
@@ -46,6 +54,12 @@ Use these operator details:
 Deployment details:
 - relay name: ${relayNameInput.value || "MyRelay"}
 - target platform: ${target}
+
+Use these exact source repositories and branches (do not search alternatives):
+- swarm repo: ${swarmRepoInput.value || "https://github.com/hivetalk/swarm"}
+- swarm branch: ${swarmBranchInput.value || "zeabur-dashboard"}
+- cms repo: ${cmsRepoInput.value || "https://github.com/bitkarrot/nostr-cms"}
+- cms branch: ${cmsBranchInput.value || "main"}
 
 Requirements:
 1) Deploy swarm relay and nostr-cms together.
@@ -65,6 +79,7 @@ Requirements:
    - /app/blossom
 9) Generate exact env values, volume settings, routing setup, and startup commands.
 10) Do not use Vercel for the relay service.
+${exedevPortNote}
 
 After deploy, provide a checklist to verify:
 - relay websocket reachable
@@ -149,7 +164,15 @@ themeToggle.addEventListener("click", () => {
   applyTheme(current === "dark" ? "light" : "dark");
 });
 
-[targetInput, usernameInput, relayNameInput].forEach((el) => {
+[
+  targetInput,
+  usernameInput,
+  relayNameInput,
+  swarmRepoInput,
+  swarmBranchInput,
+  cmsRepoInput,
+  cmsBranchInput,
+].forEach((el) => {
   el.addEventListener("input", renderPrompt);
 });
 

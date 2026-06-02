@@ -52,6 +52,28 @@
           </label>
         </div>
 
+        <h3>Source repositories (used in prompt)</h3>
+        <p class="muted">Set exact repos/branches so AI deploy does not waste time searching.</p>
+
+        <div class="grid">
+          <label>
+            Swarm Repo URL
+            <input id="swarmRepoInput" type="text" value="https://github.com/hivetalk/swarm" />
+          </label>
+          <label>
+            Swarm Branch
+            <input id="swarmBranchInput" type="text" value="zeabur-dashboard" />
+          </label>
+          <label>
+            CMS Repo URL
+            <input id="cmsRepoInput" type="text" value="https://github.com/bitkarrot/nostr-cms" />
+          </label>
+          <label>
+            CMS Branch
+            <input id="cmsBranchInput" type="text" value="main" />
+          </label>
+        </div>
+
         <label>
           Pubkey (hex)
           <input id="pubkeyHexInput" type="text" readonly />
