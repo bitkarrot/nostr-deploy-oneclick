@@ -7,6 +7,8 @@ A single-page website for non-technical users:
 3. Generate a deployment prompt
 4. Copy/paste into an AI deploy assistant
 
+Architecture details: see [ARCHITECTURE.md](./ARCHITECTURE.md).
+
 ## Deploy this helper page to Vercel
 
 Vercel hosts this static helper UI only.
