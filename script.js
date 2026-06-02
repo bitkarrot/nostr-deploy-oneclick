@@ -104,6 +104,49 @@ When done, return:
 - outputs of all verification gates`;
   }
 
+  if (target === "Zeabur") {
+    return `${commonHeader}
+
+Follow these rules exactly:
+1) Use exact repos/branches above. Do not search alternatives.
+2) Deploy both services in one Zeabur project.
+3) Use Zeabur auto-generated domain for first successful verification.
+4) Do not mark success until all verification gates pass.
+
+Execution plan:
+A) Clone/import swarm from exact repo + branch.
+B) Clone/import nostr-cms from exact repo + branch.
+C) Configure swarm runtime with Badger storage and persistent volumes.
+D) Configure routing so one domain handles:
+   - / => nostr-cms
+   - /api/* => swarm
+   - websocket upgrades => swarm
+   - /.well-known/nostr.json => swarm
+E) Ensure RELAY_PUBKEY uses my hex pubkey above.
+F) Ensure nostr.json ACL remains relay-owned on swarm.
+G) Ensure CMS admin uses relay-served nostr.json for auth/roles.
+
+Hard requirements:
+- persistent storage must be mounted for swarm at minimum:
+  - /app/db
+  - /app/public
+  - /app/blossom
+- if Zeabur requires explicit public routing/port exposure, configure it before running external verification.
+- do not switch away from Badger unless user explicitly requests it.
+
+Required verification gates (must all pass):
+1) GET / returns CMS (200)
+2) /.well-known/nostr.json returns valid JSON with names object
+3) NIP-11 response works via Accept: application/nostr+json
+4) WSS connection works on the generated domain
+
+When done, return:
+- final public URL
+- exact env/config values applied
+- volume mounts configured
+- outputs of all verification gates`;
+  }
+
   return `${commonHeader}
 
 Requirements:
