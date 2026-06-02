@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meetup Space Architecture</title>
+    <meta name="description" content="Meetup Space architecture for nostr-cms and swarm relay." />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <div class="hero-top">
+          <p class="badge">Architecture</p>
+          <a class="ghost" href="./">Back to Home</a>
+        </div>
+        <h1>Meetup Space Architecture (CMS + Relay)</h1>
+        <p class="lede">
+          This page describes the system deployed by the generated prompt: `nostr-cms` + `swarm` in a single-domain setup.
+        </p>
+      </header>
+
+      <section class="card">
+        <h2>Scope</h2>
+        <ul>
+          <li><code>nostr-cms</code> (frontend CMS/admin)</li>
+          <li><code>swarm</code> (relay + API + ACL source)</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>High-level topology</h2>
+        <pre><code>                     https://&lt;domain&gt;
+                           |
+             +-------------+-------------+
+             |                           |
+      / and /admin/*                 /api/* + wss://
+             |                           |
+      +------v-------+            +------v----------------+
+      | nostr-cms    |            | swarm                 |
+      | React/Vite   |            | Go relay + HTTP API   |
+      | Admin UI     |            | Nostr websocket relay |
+      +------+-------+            +------+-----------------+
+             |                           |
+             +---- calls /api/admin/* ---&gt;|
+                                         ACL source:
+                                         /.well-known/nostr.json</code></pre>
+      </section>
+
+      <section class="card">
+        <h2>Routing model (single domain)</h2>
+        <ul>
+          <li><code>https://&lt;domain&gt;/</code> -&gt; <code>nostr-cms</code></li>
+          <li><code>https://&lt;domain&gt;/admin/*</code> -&gt; <code>nostr-cms</code></li>
+          <li><code>https://&lt;domain&gt;/api/*</code> -&gt; <code>swarm</code></li>
+          <li><code>wss://&lt;domain&gt;/</code> -&gt; <code>swarm</code></li>
+          <li><code>https://&lt;domain&gt;/.well-known/nostr.json</code> -&gt; <code>swarm</code></li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Auth and authorization model</h2>
+        <ol>
+          <li>User logs into CMS with Nostr key (NIP-07 signer).</li>
+          <li>CMS reads relay-served <code>nostr.json</code>.</li>
+          <li>Admin authorization is derived from pubkeys in <code>nostr.json</code>.</li>
+          <li>Super-user is the relay owner (<code>_</code> entry / <code>RELAY_PUBKEY</code>).</li>
+          <li>CMS performs privileged actions through <code>swarm</code> admin APIs.</li>
+        </ol>
+      </section>
+
+      <section class="card">
+        <h2>API migration note</h2>
+        <p><code>swarm</code> currently supports:</p>
+        <ul>
+          <li>Legacy: <code>/api/dashboard/*</code></li>
+          <li>New alias: <code>/api/admin/*</code></li>
+        </ul>
+        <p>This allows migration of admin UI from relay dashboard to CMS without breaking old paths.</p>
+      </section>
+
+      <section class="card">
+        <h2>Storage and persistence</h2>
+        <p><code>swarm</code> default runtime uses Badger + local media paths and requires persistent storage:</p>
+        <ul>
+          <li><code>/app/db</code> (Badger database)</li>
+          <li><code>/app/public</code> (<code>nostr.json</code> and public artifacts)</li>
+          <li><code>/app/blossom</code> (media/blob data)</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Setup tooling</h2>
+        <p>In <code>swarm</code>:</p>
+        <ul>
+          <li><code>setup/install-meetup-space.sh</code>
+            <ul>
+              <li><code>--mode manual</code> (print steps)</li>
+              <li><code>--mode prompt</code> (interactive)</li>
+              <li><code>--mode agent</code> (non-interactive)</li>
+            </ul>
+          </li>
+          <li><code>setup/meetup-space-init.sh</code> (legacy wrapper to prompt mode)</li>
+          <li><code>setup/nginx-meetup-space.conf</code> (reverse-proxy template)</li>
+        </ul>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        const saved = localStorage.getItem('theme');
+        document.body.setAttribute('data-theme', saved === 'light' ? 'light' : 'dark');
+      })();
+    </script>
+  </body>
+</html>
