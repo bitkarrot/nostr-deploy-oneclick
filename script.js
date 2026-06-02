@@ -39,12 +39,7 @@ function initTheme() {
 
 function defaultPrompt() {
   const target = targetInput.value === "exedev" ? "exe.dev" : "Zeabur";
-  const exedevPortNote = target === "exe.dev"
-    ? `
-11) IMPORTANT for exe.dev: make the service port public before external testing. If port is private, external health checks fail and AI can loop forever.`
-    : "";
-
-  return `I need you to deploy a Meetup Space stack for me on ${target}.
+  const commonHeader = `I need you to deploy a Meetup Space stack for me on ${target}.
 
 Use these operator details:
 - username: ${usernameInput.value || "<username>"}
@@ -59,7 +54,57 @@ Use these exact source repositories and branches (do not search alternatives):
 - swarm repo: ${swarmRepoInput.value || "https://github.com/hivetalk/swarm"}
 - swarm branch: ${swarmBranchInput.value || "zeabur-dashboard"}
 - cms repo: ${cmsRepoInput.value || "https://github.com/bitkarrot/nostr-cms"}
-- cms branch: ${cmsBranchInput.value || "main"}
+- cms branch: ${cmsBranchInput.value || "main"}`;
+
+  if (target === "exe.dev") {
+    return `${commonHeader}
+
+Follow these rules exactly:
+1) Do NOT use Docker.
+2) Use exact repos/branches above. Do not search alternatives.
+3) Working directory must be: /home/exedev/meetup-space
+4) IMPORTANT: make exe.dev port public BEFORE external testing, otherwise you will loop on failed health checks.
+
+Execution plan:
+A) Prereqs: install go, node, nginx.
+B) First run exe.dev port sharing:
+   - ssh exe.dev share port $(hostname) 80
+   - ssh exe.dev share set-public $(hostname)
+   - Use DOMAIN=https://$(hostname).exe.xyz
+   - If exe.dev requires interactive SSH registration/login, STOP and ask user to complete it first.
+C) Clone and build swarm:
+   - git clone -b ${swarmBranchInput.value || "zeabur-dashboard"} ${swarmRepoInput.value || "https://github.com/hivetalk/swarm"}
+   - go build
+D) Configure swarm with Badger and persistent paths (db/public/blossom).
+E) Create nostr.json owned by relay in swarm public well-known path.
+F) Clone/build CMS from exact repo/branch above and wire env to DOMAIN.
+G) Configure nginx with single-domain routing:
+   - / => CMS static dist
+   - /api/* => swarm
+   - websocket upgrades => swarm
+   - /.well-known/nostr.json => proxy to swarm /public/.well-known/nostr.json
+     (critical nuance: swarm serves nostr.json under /public/.well-known/)
+H) Create systemd service for swarm and enable/start it.
+
+Hard requirements:
+- Set RELAY_PUBKEY to my hex pubkey above.
+- Keep nostr.json ACL on swarm.
+- Use nostr-cms as admin UI.
+- Do not mark task complete until all verification checks pass.
+
+Required verification gates (must all pass):
+1) GET / returns CMS (200)
+2) /.well-known/nostr.json returns valid JSON with names object
+3) NIP-11 response works via Accept: application/nostr+json
+4) WSS connection works externally on generated domain
+
+When done, return:
+- final public URL
+- exact files created/edited (.env, nginx conf, systemd unit)
+- outputs of all verification gates`;
+  }
+
+  return `${commonHeader}
 
 Requirements:
 1) Deploy swarm relay and nostr-cms together.
@@ -79,7 +124,6 @@ Requirements:
    - /app/blossom
 9) Generate exact env values, volume settings, routing setup, and startup commands.
 10) Do not use Vercel for the relay service.
-${exedevPortNote}
 
 After deploy, provide a checklist to verify:
 - relay websocket reachable
