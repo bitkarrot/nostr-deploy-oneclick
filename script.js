@@ -38,7 +38,12 @@ function initTheme() {
 }
 
 function defaultPrompt() {
-  const target = targetInput.value === "exedev" ? "exe.dev" : "Zeabur";
+  const target =
+    targetInput.value === "exedev"
+      ? "exe.dev"
+      : targetInput.value === "vps"
+        ? "General VPS"
+        : "Zeabur";
   const commonHeader = `I need you to deploy a Meetup Space stack for me on ${target}.
 
 Use these operator details:
@@ -144,6 +149,54 @@ When done, return:
 - final public URL
 - exact env/config values applied
 - volume mounts configured
+- outputs of all verification gates`;
+  }
+
+  if (target === "General VPS") {
+    return `${commonHeader}
+
+Follow these rules exactly:
+1) Use exact repos/branches above. Do not search alternatives.
+2) Do not use Vercel or other static-only hosting for relay runtime.
+3) Choose a standard VPS setup (Ubuntu 22.04+ preferred) with a public domain.
+4) Do not mark success until all verification gates pass.
+
+Execution plan:
+A) Install prerequisites: git, curl, nginx, Go (1.22+), Node LTS.
+B) Create working directory, clone both repos from exact URL/branch values above.
+C) Build swarm relay binary.
+D) Configure swarm for Badger + persistent storage paths.
+E) Create relay-owned nostr.json ACL in swarm public well-known path.
+F) Build nostr-cms static output with env values pointing to the same public domain.
+G) Configure reverse proxy (nginx or equivalent) for one-domain routing:
+   - / => nostr-cms static files
+   - /api/* => swarm
+   - websocket upgrades => swarm
+   - /.well-known/nostr.json => relay-served ACL
+H) Configure swarm as a persistent service (systemd or platform equivalent).
+I) Obtain/enable TLS and ensure both https:// and wss:// work on the same domain.
+
+Hard requirements:
+- Set RELAY_PUBKEY to my hex pubkey above.
+- Keep nostr.json ACL on swarm.
+- Use nostr-cms as admin UI.
+- Keep Badger unless user explicitly requests a different DB engine.
+- Persistent storage must exist for relay paths equivalent to:
+  - /app/db
+  - /app/public
+  - /app/blossom
+
+Required verification gates (must all pass):
+1) GET / returns CMS (200)
+2) /.well-known/nostr.json returns valid JSON with names object
+3) NIP-11 response works via Accept: application/nostr+json
+4) WSS connection works on the public domain
+5) Admin login in CMS works with my Nostr key
+
+When done, return:
+- final public domain
+- exact files created/edited (.env, proxy config, service unit)
+- exact commands used for build/start
 - outputs of all verification gates`;
   }
 
