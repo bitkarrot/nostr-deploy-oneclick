@@ -58,6 +58,14 @@ body {
   margin-bottom: 22px;
 }
 
+.hero-image {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  box-shadow: var(--surface-shadow);
+  margin: 0 0 14px;
+}
+
 .hero-top {
   display: flex;
   justify-content: space-between;
@@ -106,6 +114,20 @@ h2 {
 .lede {
   margin: 0;
   color: var(--muted);
+}
+
+.purpose {
+  margin: 0 0 10px;
+  color: var(--headline);
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 800;
+}
+
+@media (max-width: 640px) {
+  .purpose {
+    font-size: 24px;
+  }
 }
 
 .inline-link {
