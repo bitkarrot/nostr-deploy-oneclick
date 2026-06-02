@@ -94,6 +94,16 @@ h2 {
   color: var(--muted);
 }
 
+.inline-link {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.inline-link:hover {
+  color: var(--primary-hover);
+}
+
 .card {
   background: var(--card);
   border: 1px solid var(--line);
