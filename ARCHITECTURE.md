@@ -1,44 +1,70 @@
-# Architecture Overview
+# Meetup Space Architecture (CMS + Relay)
 
-This repo is a **static onboarding helper UI** for non-technical users.
+This document describes the current setup across:
 
-It does **not** host the relay. It helps users:
+- `nostr-cms` (frontend CMS/admin)
+- `swarm` (relay + API + ACL source)
 
-1. Login with Nostr (NIP-07)
-2. Capture username + pubkey
-3. Generate a copy/paste AI deployment prompt
-4. Deploy relay stack to Zeabur or exe.dev
-
-## Runtime
-
-- Hosting: static (Vercel)
-- Frontend: plain HTML + CSS + JS
-- Nostr auth: browser extension (`window.nostr`)
-- Nostr profile lookup: `nostr-tools` + public relays
-
-## Flow
+## High-level topology
 
 ```text
-User browser
-  -> Login with Nostr extension (NIP-07)
-  -> Get pubkey (hex + npub)
-  -> Optionally fetch kind:0 profile for username
-  -> Generate AI deploy prompt
-  -> Copy prompt into Zeabur/exe.dev AI assistant
+                     https://<domain>
+                           |
+             +-------------+-------------+
+             |                           |
+      / and /admin/*                 /api/* + wss://
+             |                           |
+      +------v-------+            +------v----------------+
+      | nostr-cms    |            | swarm                 |
+      | React/Vite   |            | Go relay + HTTP API   |
+      | Admin UI     |            | Nostr websocket relay |
+      +------+-------+            +------+-----------------+
+             |                           |
+             +---- calls /api/admin/* --->|
+                                         ACL source:
+                                         /.well-known/nostr.json
 ```
 
-## Prompt intent
+## Routing model (single domain)
 
-The generated prompt tells AI to deploy `swarm` + `nostr-cms` together with:
+- `https://<domain>/` -> `nostr-cms`
+- `https://<domain>/admin/*` -> `nostr-cms`
+- `https://<domain>/api/*` -> `swarm`
+- `wss://<domain>/` -> `swarm`
+- `https://<domain>/.well-known/nostr.json` -> `swarm`
 
-- Single-domain routing
-- `nostr.json` ACL on `swarm`
-- `nostr-cms` as admin UI
-- Persistent storage (Badger + media paths)
-- Auto-generated platform domain (Zeabur/exe.dev)
+## Auth and authorization model
 
-## Important constraint
+1. User logs into CMS with Nostr key (NIP-07 signer).
+2. CMS reads relay-served `nostr.json`.
+3. Admin authorization is derived from pubkeys in `nostr.json`.
+4. Super-user is the relay owner (`_` entry / `RELAY_PUBKEY`).
+5. CMS performs privileged actions through `swarm` admin APIs.
 
-`swarm` uses Badger by default and needs persistent volumes (`/app/db`, `/app/public`, `/app/blossom`).
+## API migration note
 
-So Vercel is appropriate for this helper page only, not for hosting relay services.
+`swarm` currently supports:
+
+- Legacy: `/api/dashboard/*`
+- New alias: `/api/admin/*`
+
+This allows migration of admin UI from relay dashboard to CMS without breaking old paths.
+
+## Storage and persistence
+
+`swarm` default runtime uses Badger + local media paths and requires persistent storage:
+
+- `/app/db` (Badger database)
+- `/app/public` (`nostr.json` and public artifacts)
+- `/app/blossom` (media/blob data)
+
+## Setup tooling
+
+In `swarm`:
+
+- `setup/install-meetup-space.sh`
+  - `--mode manual` (print steps)
+  - `--mode prompt` (interactive)
+  - `--mode agent` (non-interactive)
+- `setup/meetup-space-init.sh` (legacy wrapper to prompt mode)
+- `setup/nginx-meetup-space.conf` (reverse-proxy template)
