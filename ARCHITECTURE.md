@@ -58,13 +58,3 @@ This allows migration of admin UI from relay dashboard to CMS without breaking o
 - `/app/public` (`nostr.json` and public artifacts)
 - `/app/blossom` (media/blob data)
 
-## Setup tooling
-
-In `swarm`:
-
-- `setup/install-meetup-space.sh`
-  - `--mode manual` (print steps)
-  - `--mode prompt` (interactive)
-  - `--mode agent` (non-interactive)
-- `setup/meetup-space-init.sh` (legacy wrapper to prompt mode)
-- `setup/nginx-meetup-space.conf` (reverse-proxy template)
