@@ -63,7 +63,9 @@
         </div>
 
         <h3>Source repositories (used in prompt)</h3>
-        <p class="muted">Set exact repos/branches so AI deploy does not waste time searching.</p>
+        <p class="muted">Set exact repos/branches so AI deploy does not waste time searching.
+          zeabur-dashboard branch is default for swarm, it will deploy anywhere, don't worry about the name.
+        </p>
 
         <div class="grid">
           <label>
@@ -71,7 +73,7 @@
             <input id="swarmRepoInput" type="text" value="https://github.com/hivetalk/swarm" />
           </label>
           <label>
-            Swarm Branch (zeabur is default)
+            Swarm Branch (default is zeabur-dashboard)
             <input id="swarmBranchInput" type="text" value="zeabur-dashboard" />
           </label>
           </div>
@@ -81,7 +83,7 @@
             <input id="cmsRepoInput" type="text" value="https://github.com/bitkarrot/nostr-cms" />
           </label>
           <label>
-            CMS Branch
+            CMS Branch (default)
             <input id="cmsBranchInput" type="text" value="main" />
           </label>
         </div>
